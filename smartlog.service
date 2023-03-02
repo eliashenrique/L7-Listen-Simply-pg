@@ -9,4 +9,3 @@ ExecStop=python3 /home/smartlog/service/run.py stop
 
 [Install]
 WantedBy=multi-user.target
-

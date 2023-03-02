@@ -1,7 +1,7 @@
 import subprocess
 import socketserver
 import logging
-from lib.dao import Dao
+from lib.dao import Dao, get_config
 from lib.spread import Spread
 
 
