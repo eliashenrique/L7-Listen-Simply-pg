@@ -1,0 +1,12 @@
+[Unit]
+Description=Smartlog Service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=python3 /home/smartlog/service/run.py start
+ExecStop=python3 /home/smartlog/service/run.py stop
+
+[Install]
+WantedBy=multi-user.target
+

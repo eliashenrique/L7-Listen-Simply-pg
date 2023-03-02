@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/RouterOS-api" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/huawei-modem-python-api-client" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/lib/paramiko" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/paramiko" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pppoe/lib/2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pppoe/lib/paramiko" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/test/paramiko" vcs="Git" />
+  </component>
+</project>
