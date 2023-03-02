@@ -1,3 +1,5 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 from datetime import datetime, date
 import time
 
@@ -7,48 +9,57 @@ class Spread:
     def __init__(self, datas, psql):
         self.psql = psql
         self.datas = datas
+        self.dict_logs = {}
         self.millis = int(round(time.time() * 1000))
         self.info_router = datas.split('out:')[0].replace(',', '').split()
-
-        parts = [
-            val for val in datas.split(',')[0].replace('<', '').split('>')
-            [1].split() if val or (not val and parts[idx - 1])
+        self.d = datas.split(',')[0].replace('<', '').split('>')[1].split()
+        self.d = [
+            val for idx, val in enumerate(self.d)
+            if val or (not val and self.d[idx - 1])
         ]
 
-        self.name_router = parts[3]
+        self.name_router = self.d[3]
         mes, year = self.d[0], date.today().strftime("%Y")
-        self.date_log = datetime.strptime(f'{self.d[1]}-{mes}-{year} {self.d[2]}', '%d-%b-%Y %H:%M:%S')
+        self.date_log = datetime.strptime(
+            f'{self.d[1]}-{mes}-{year} {self.d[2]}', '%d-%b-%Y %H:%M:%S')
 
     def handling(self):
-        mac, protocol, private, public, length = None, None, (None, None), (
-            None, None), None
-        parts = self.datas.split(',')[1:]
+        mac, protocol, private, public, length, srch = None, None, [
+            None, None
+        ], [None, None], None, None
+        stt = self.datas.split(',')[1:]
+        aux = []
 
-        for part in parts:
-            key, value = part.split()[0], part.split()[1:]
-            if len(value) > 0:
-                value = value[0]
+        for i in stt:
+            val = i.split()
+            if len(val) < 2:
+                aux.append(['request', val[0]])
             else:
-                value = None
+                aux.append(val)
 
-            if 'src-mac' in key:
-                mac = value
-            elif 'proto' in key:
-                protocol = value
-            elif 'request' in key:
-                request = value.split('->')[0]
+        for j in aux:
+            if 'src-mac' in j[0]:
+                mac = j[1]
+            elif 'proto' in j[0]:
+                protocol = j[1]
+            elif 'request' in j[0]:
+                request = j[1].split('->')[0]
                 result = self.whois(request)
 
                 if result == 'private':
-                    private = tuple(request.split(':'))
+                    private = request.split(':')
+                    srch = private[0]
                 else:
-                    public = tuple(request.split(':'))
-            elif 'NAT' in key:
-                lst = value.replace('(', '').replace(')', '').split('->')
-                private = tuple(lst[0].split(':'))
-                public = tuple(lst[1].split(':'))
-            elif 'len' in key:
-                length = value
+                    public = request.split(':')
+                    srch = public[0]
+
+            elif 'NAT' in j[0]:
+                lst = j[1].replace('(', '').replace(')', '').split('->')
+                private = lst[0].split(':')
+                public = lst[1].split(':')
+                srch = private[0]
+            elif 'len' in j[0]:
+                length = j[1]
 
         dict_logs = {
             'id': self.millis,
@@ -61,23 +72,20 @@ class Spread:
             'public_ip': public[0],
             'public_port': public[1],
             'len': length,
-            'pppoe_user': None,
-            'pppoe_mac': None,
             'raw': self.datas
         }
 
-        dict_logs = {k: v for k, v in dict_logs.items() if v is not None}
+        for key, value in dict(dict_logs).items():
+            if value is None:
+                del dict_logs[key]
 
         return dict_logs
 
-    def store_log(self, method_name):
-        getattr(self.psql, method_name)(self.handling())
-
     def cgnat(self):
-        self.store_log('store')
+        self.psql.store(self.handling())
 
     def ipv4(self):
-        self.store_log('store')
+        self.psql.store(self.handling())
 
     @staticmethod
     def whois(ip):
