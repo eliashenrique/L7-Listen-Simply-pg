@@ -19,11 +19,6 @@ class SmartLog(socketserver.BaseRequestHandler):
         except IndexError:
             pass
 
-    def setup(self):
-        logging.info(f"Connection from {self.client_address[0]}")
-
-    def finish(self):
-        logging.info(f"Connection closed with {self.client_address[0]}")
 
 
 if __name__ == '__main__':
