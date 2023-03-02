@@ -35,24 +35,20 @@ class Dao(object):
         del raw_del['connection_date']
 
         # Construct the SQL query with parameterized placeholders for the values
-        columns = ', '.join(raw_del.keys())
-        value_placeholders = ', '.join(['%s'] * len(raw_del))
-        sql = f"""
-        INSERT INTO connection_log (id, connection_date, {columns}, created_at)
-        VALUES (%s, %s, {value_placeholders}, NOW())
-        """
-
-        # Encrypt the values using the specified key
-        encrypted_values = [
-            pgp_sym_encrypt(str(i), key) for i in raw_del.values()
-        ]
+        param = ''.join(
+            f'connection_log (id, connection_date, %s, created_at) VALUES' %
+            ', '.join(i for i in raw.keys()))
+        
+        sql = ''.join(
+            f'INSERT INTO {param} ({log_id}, \'{connection_dat}\', %s, NOW())'
+            % ', '.join("pgp_sym_encrypt('" + str(i) + "', '" + key + "')"
+                        for i in raw_del.values()))
 
         # Insert the values into the database using a context manager
         with psycopg2.connect(**self.conn_params) as conn:
             with conn.cursor() as cur:
                 try:
-                    cur.execute(sql,
-                                [log_id, connection_dat, *encrypted_values])
+                    cur.execute(sql)
                     conn.commit()
                 except psycopg2.Error as e:
                     print(f"Error inserting data into database: {e}")
