@@ -25,20 +25,23 @@ class Dao(object):
         }
 
     def store(self, raw):
+        raw_del = raw
         log_id = str(raw['id'])
+
         connection_dat = str(raw['connection_date'])
         key = "RmVsaXBlLUFuZHJhZGUtMjEuNzA2LjI2OS8wMDAxLTY4"
 
-        # Remove id and connection_date keys from the raw dictionary
-        raw_del = raw.copy()
-        del raw_del['id']
-        del raw_del['connection_date']
+        bol = self.params()
 
-        # Construct the SQL query with parameterized placeholders for the values
+        if not bol:
+            del (raw_del['raw'])
+
+        del (raw_del['id'])
+        del (raw_del['connection_date'])
+
         param = ''.join(
             f'connection_log (id, connection_date, %s, created_at) VALUES' %
             ', '.join(i for i in raw.keys()))
-        
         sql = ''.join(
             f'INSERT INTO {param} ({log_id}, \'{connection_dat}\', %s, NOW())'
             % ', '.join("pgp_sym_encrypt('" + str(i) + "', '" + key + "')"
