@@ -1,11 +1,16 @@
 [Unit]
-Description=Smartlog Service
-After=multi-user.target
+Description=Smart Log Service
 
 [Service]
+User=root
+WorkingDirectory=/home/layer7/L7-Listen-Simply-pg
+ExecStart=/usr/bin/python3 /home/layer7/L7-Listen-Simply-pg/smartlog.py
 Type=simple
-ExecStart=python3 /home/smartlog/service/run.py start
-ExecStop=python3 /home/smartlog/service/run.py stop
+KillSignal=SIGINT
+Environment=PYTHONUNBUFFERED=1
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
