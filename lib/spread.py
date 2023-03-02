@@ -16,9 +16,8 @@ class Spread:
         ]
 
         self.name_router = parts[3]
-        self.date_log = datetime.strptime(
-            ' '.join(parts[:3] + [date.today().strftime("%Y")]),
-            '%d %b %Y %H:%M:%S')
+        mes, year = self.d[0], date.today().strftime("%Y")
+        self.date_log = datetime.strptime(f'{self.d[1]}-{mes}-{year} {self.d[2]}', '%d-%b-%Y %H:%M:%S')
 
     def handling(self):
         mac, protocol, private, public, length = None, None, (None, None), (
