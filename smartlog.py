@@ -9,13 +9,15 @@ class SmartLog(socketserver.BaseRequestHandler):
 
     def handle(self):
         datas = bytes.decode(self.request[0].strip(), encoding="utf-8")
-
-        dao = Dao(get_config(), 'dev')
-        spread = Spread(datas, dao)
-        if ' NAT ' in datas:
-            spread.cgnat()
-        else:
-            spread.ipv4()
+        try:
+            dao = Dao(get_config(), 'dev')
+            spread = Spread(datas, dao)
+            if ' NAT ' in datas:
+                spread.cgnat()
+            else:
+                spread.ipv4()
+        except IndexError:
+            pass
 
     def setup(self):
         logging.info(f"Connection from {self.client_address[0]}")
