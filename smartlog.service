@@ -3,8 +3,8 @@ Description=Smart Log Service
 
 [Service]
 User=root
-WorkingDirectory=/home/layer7/L7-Listen-Simply-pg
-ExecStart=/usr/bin/python3 /home/layer7/L7-Listen-Simply-pg/smartlog.py
+WorkingDirectory=/home/layer7/smartlog
+ExecStart=/usr/bin/python3 /home/layer7/smartlog/smartlog.py
 Type=simple
 KillSignal=SIGINT
 Environment=PYTHONUNBUFFERED=1
